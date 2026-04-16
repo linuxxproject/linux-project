@@ -1,4 +1,4 @@
-name: CI Test
+name: CI Pipeline
 
 on:
   push:
@@ -7,12 +7,18 @@ on:
     branches: [develop]
 
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Run a script
-        run: echo "Hello GitHub Actions!"
+      - name: Lint
+        run: echo "No lint yet"
+
+      - name: Build
+        run: echo "No build yet"
+
+      - name: Run tests
+        run: echo "No tests yet"
