@@ -14,11 +14,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Lint
-        run: echo "No lint yet"
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
 
-      - name: Build
-        run: echo "No build yet"
+      - name: Install dependencies
+        run: composer install
+
+      - name: Setup env
+        run: cp .env.example .env
+
+      - name: Generate key
+        run: php artisan key:generate
 
       - name: Run tests
-        run: echo "No tests yet"
+        run: php artisan test
