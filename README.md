@@ -1,6 +1,4 @@
-# linux-projectlogin feature
-dashboard feature
-test action
-test CI pipeline
-test again
-trigger CI final
+# Freelance Pro
+
+Plateforme de recherche de travail freelance  
+Projet Laravel + Angular + Docker
