@@ -27,4 +27,4 @@ jobs:
 
       - run: php artisan key:generate || true
 
-      - run: php artisan test || true
+      - run: php artisan test 
