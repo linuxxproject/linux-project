@@ -1,0 +1,65 @@
+<div class="dashboard-container">
+  
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      <h3>Mon Espace</h3>
+    </div>
+    
+    <nav>
+      <a routerLink="/client/dashboard" class="active">
+        <span>📊</span> Tableau de bord
+      </a>
+      <a routerLink="/client/publier-mission">
+        <span>➕</span> Publier une mission
+      </a>
+      <a routerLink="/client/mes-missions">
+        <span>📋</span> Mes missions
+      </a>
+      <a routerLink="/client/candidatures">
+        <span>👥</span> Candidatures reçues
+      </a>
+    </nav>
+
+    <div class="user-info">
+      <p>{{ user?.name }}</p>
+      <small>{{ user?.email }}</small>
+      <button (click)="logout()" class="btn-logout">Déconnexion</button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <h1>Tableau de bord</h1>
+    
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>{{ stats.missionsTotal }}</h3>
+        <p>Missions publiées</p>
+      </div>
+      <div class="stat-card">
+        <h3>{{ stats.missionsOuvertes }}</h3>
+        <p>Missions ouvertes</p>
+      </div>
+      <div class="stat-card">
+        <h3>{{ stats.candidaturesRecues }}</h3>
+        <p>Candidatures reçues</p>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <h2>Actions rapides</h2>
+      <div class="actions-grid">
+        <a routerLink="/client/publier-mission" class="action-card">
+          <span>📝</span>
+          <p>Publier une nouvelle mission</p>
+        </a>
+        <a routerLink="/client/mes-missions" class="action-card">
+          <span>📋</span>
+          <p>Voir mes missions</p>
+        </a>
+      </div>
+    </div>
+  </main>
+
+</div>

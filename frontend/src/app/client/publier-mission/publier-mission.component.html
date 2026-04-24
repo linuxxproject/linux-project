@@ -1,0 +1,86 @@
+<div class="dashboard-container">
+  
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo"><h3>Mon Espace</h3></div>
+    <nav>
+      <a routerLink="/client/dashboard">📊 Tableau de bord</a>
+      <a routerLink="/client/publier-mission" class="active">➕ Publier une mission</a>
+      <a routerLink="/client/mes-missions">📋 Mes missions</a>
+      <a routerLink="/client/candidatures">👥 Candidatures reçues</a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <h1>Publier une mission</h1>
+
+    <div class="success-message" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="missionForm" (ngSubmit)="onSubmit()" class="mission-form">
+      
+      <div class="form-group">
+        <label>Titre de la mission *</label>
+        <input type="text" formControlName="titre" placeholder="Ex: Développement d'une application mobile">
+        <div class="error-text" *ngIf="titre?.invalid && titre?.touched">
+          <span *ngIf="titre?.errors?.['required']">Le titre est requis</span>
+          <span *ngIf="titre?.errors?.['minlength']">Minimum 5 caractères</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Description détaillée *</label>
+        <textarea formControlName="description" rows="6" placeholder="Décrivez votre mission en détail..."></textarea>
+        <div class="error-text" *ngIf="description?.invalid && description?.touched">
+          <span *ngIf="description?.errors?.['required']">La description est requise</span>
+          <span *ngIf="description?.errors?.['minlength']">Minimum 20 caractères</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Catégorie *</label>
+          <select formControlName="categorie">
+            <option value="">Choisir une catégorie</option>
+            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+          </select>
+          <div class="error-text" *ngIf="categorie?.invalid && categorie?.touched">
+            Sélectionnez une catégorie
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Budget (€) *</label>
+          <input type="number" formControlName="budget" placeholder="1000">
+          <div class="error-text" *ngIf="budget?.invalid && budget?.touched">
+            <span *ngIf="budget?.errors?.['required']">Le budget est requis</span>
+            <span *ngIf="budget?.errors?.['min']">Le budget doit être positif</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Date d'échéance *</label>
+        <input type="date" formControlName="date_echeance">
+        <div class="error-text" *ngIf="dateEcheance?.invalid && dateEcheance?.touched">
+          La date d'échéance est requise
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" routerLink="/client/dashboard" class="btn-secondary">Annuler</button>
+        <button type="submit" [disabled]="missionForm.invalid || isLoading" class="btn-primary">
+          <span *ngIf="isLoading">Publication...</span>
+          <span *ngIf="!isLoading">Publier la mission</span>
+        </button>
+      </div>
+
+    </form>
+  </main>
+
+</div>

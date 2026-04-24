@@ -1,0 +1,71 @@
+<div class="dashboard-container">
+  
+  <aside class="sidebar">
+    <div class="logo"><h3>Mon Espace</h3></div>
+    <nav>
+      <a routerLink="/client/dashboard">📊 Tableau de bord</a>
+      <a routerLink="/client/publier-mission">➕ Publier une mission</a>
+      <a routerLink="/client/mes-missions">📋 Mes missions</a>
+      <a routerLink="/client/candidatures" class="active">👥 Candidatures reçues</a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <h1>Candidatures reçues</h1>
+
+    <div class="loading" *ngIf="isLoading">Chargement...</div>
+
+    <div class="content" *ngIf="!isLoading">
+      
+      <!-- Liste des missions -->
+      <div class="missions-sidebar">
+        <h3>Sélectionner une mission</h3>
+        <div 
+          class="mission-item" 
+          *ngFor="let mission of missions"
+          [class.active]="selectedMissionId === mission.id"
+          (click)="loadCandidatures(mission.id)"
+        >
+          <h4>{{ mission.titre }}</h4>
+          <span class="badge">{{ mission.candidatures_count || 0 }} candidatures</span>
+        </div>
+        
+        <div class="empty" *ngIf="missions.length === 0">
+          Aucune mission publiée
+        </div>
+      </div>
+
+      <!-- Candidatures -->
+      <div class="candidatures-content">
+        <div class="empty-state" *ngIf="!selectedMissionId">
+          <p>Sélectionnez une mission pour voir ses candidatures</p>
+        </div>
+
+        <div *ngIf="selectedMissionId && candidatures.length === 0">
+          <p>Aucune candidature pour cette mission</p>
+        </div>
+
+        <div class="candidature-card" *ngFor="let cand of candidatures">
+          <div class="candidat-info">
+            <h4>{{ cand.freelance.name }}</h4>
+            <p>{{ cand.freelance.email }}</p>
+            <p class="message">{{ cand.message }}</p>
+            <span class="date">Postulé le {{ cand.created_at | date:'dd/MM/yyyy' }}</span>
+          </div>
+          
+          <div class="actions">
+            <button class="btn-accept" (click)="accepterCandidature(cand.id)">
+              ✅ Accepter
+            </button>
+            <button class="btn-refuse" (click)="refuserCandidature(cand.id)">
+              ❌ Refuser
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
