@@ -1,0 +1,28 @@
+<div style="padding: 20px;">
+  <h2>Gestion Utilisateurs</h2>
+  <table style="width:100%; border-collapse:collapse; margin-top:20px;">
+    <tr style="background:#333; color:white;">
+      <th style="padding:10px;">ID</th>
+      <th style="padding:10px;">Nom</th>
+      <th style="padding:10px;">Email</th>
+      <th style="padding:10px;">Rôle</th>
+      <th style="padding:10px;">Actions</th>
+    </tr>
+    <tr *ngFor="let user of users" style="border-bottom:1px solid #ddd;">
+      <td style="padding:10px;">{{ user.id }}</td>
+      <td style="padding:10px;">{{ user.name }}</td>
+      <td style="padding:10px;">{{ user.email }}</td>
+      <td style="padding:10px;">{{ user.role }}</td>
+      <td style="padding:10px;">
+        <button (click)="deleteUser(user.id)" 
+          style="background:red; color:white; border:none; padding:5px 10px; cursor:pointer; margin-right:5px;">
+           Supprimer
+        </button>
+        <button (click)="changeRole(user.id, 'admin')"
+          style="background:#2196F3; color:white; border:none; padding:5px 10px; cursor:pointer;">
+          → Admin
+        </button>
+      </td>
+    </tr>
+  </table>
+</div>
