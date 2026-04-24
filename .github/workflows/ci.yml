@@ -1,0 +1,48 @@
+name: FreelancePro CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          cd my-app
+          npm install
+
+      - name: Build Angular
+        run: |
+          cd my-app
+          npm run build
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          cd my-app
+          npm install
+
+      - name: Run tests
+        run: |
+          cd my-app
+          npm run test -- --watch=false --browsers=ChromeHeadless
