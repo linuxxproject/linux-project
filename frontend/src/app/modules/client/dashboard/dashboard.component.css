@@ -1,0 +1,9 @@
+.stats-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.stat { background: var(--blue-light); border-radius: var(--radius-sm); padding: 12px; }
+.stat-lbl { font-size: 10px; color: var(--blue); margin-bottom: 3px; }
+.stat-val { font-size: 22px; font-weight: 600; color: var(--blue-dark); }
+.stat-sub { font-size: 10px; color: var(--gray-400); margin-top: 2px; }
+.row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; margin-top: 14px; }
+.row-title { font-size: 12px; font-weight: 600; color: var(--gray-700); }
+.list { display: flex; flex-direction: column; gap: 8px; }
+

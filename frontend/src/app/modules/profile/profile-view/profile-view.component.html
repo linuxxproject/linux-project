@@ -1,0 +1,118 @@
+<div class="layout">
+  <app-sidebar [role]="role" [activeRoute]="'/profile'"></app-sidebar>
+
+  <div class="content">
+    <app-header
+      [role]="roleLabel"
+      [userName]="user.name"
+      [initials]="getInitials(user.name)">
+    </app-header>
+
+    <div class="app-main">
+      <div class="pg-title">Mon profil</div>
+
+      <div class="profile-layout">
+        <!-- Colonne gauche -->
+        <div class="profile-col">
+          <!-- Carte avatar -->
+          <div class="pcard">
+            <div class="p-av">{{ getInitials(user.name) }}</div>
+            <div class="p-name">{{ user.name || 'Utilisateur' }}</div>
+            <span class="badge" [class.b-client]="user.role === 'client'" [class.b-freelance]="user.role === 'freelance'" [class.b-admin]="user.role === 'admin'">
+              {{ roleLabel }}
+            </span>
+            <div class="p-bio">{{ user.bio || 'Aucune bio renseignée.' }}</div>
+
+            <div class="prog-wrap">
+              <div class="prog-lbl">
+                <span>Profil complété</span>
+                <span>{{ profileCompletion }}%</span>
+              </div>
+              <div class="prog-bar">
+                <div class="prog-fill" [style.width.%]="profileCompletion"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Infos -->
+          <div class="info-card">
+            <div class="irow">
+              <span class="ilbl">Email</span>
+              <span class="ival">{{ user.email || '-' }}</span>
+            </div>
+            <div class="irow">
+              <span class="ilbl">Téléphone</span>
+              <span class="ival">{{ user.phone || '-' }}</span>
+            </div>
+            <div class="irow">
+              <span class="ilbl">Ville</span>
+              <span class="ival">{{ user.city || '-' }}</span>
+            </div>
+            <div class="irow">
+              <span class="ilbl">Membre depuis</span>
+              <span class="ival">{{ formatDate(user.created_at) || '-' }}</span>
+            </div>
+          </div>
+
+          <!-- Compétences -->
+          <div class="info-card" *ngIf="user.skills?.length">
+            <div style="font-size:11px;font-weight:600;color:#334155;margin-bottom:6px;">Compétences</div>
+            <div class="skills-wrap">
+              <span class="skill-tag" *ngFor="let s of user.skills">{{ s }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Colonne droite -->
+        <div class="profile-col">
+          <!-- Modifier infos -->
+          <div class="form-sec">
+            <div class="form-sec-title">Modifier mes informations</div>
+            <div class="form-row-2">
+              <div class="ffield">
+                <div class="flbl">Nom complet</div>
+                <input class="fin" [(ngModel)]="user.name" />
+              </div>
+              <div class="ffield">
+                <div class="flbl">Email</div>
+                <input class="fin" [(ngModel)]="user.email" disabled />
+              </div>
+            </div>
+            <div class="form-row-2">
+              <div class="ffield">
+                <div class="flbl">Téléphone</div>
+                <input class="fin" [(ngModel)]="user.phone" />
+              </div>
+              <div class="ffield">
+                <div class="flbl">Ville</div>
+                <input class="fin" [(ngModel)]="user.city" />
+              </div>
+            </div>
+            <div class="ffield">
+              <div class="flbl">Bio</div>
+              <textarea class="ftxt" [(ngModel)]="user.bio" rows="3"></textarea>
+            </div>
+            <button class="btn-save" (click)="save()">Sauvegarder</button>
+          </div>
+
+          <!-- Changer mot de passe -->
+          <div class="form-sec">
+            <div class="form-sec-title">Changer le mot de passe</div>
+            <div class="form-row-2">
+              <div class="ffield">
+                <div class="flbl">Ancien mot de passe</div>
+                <input class="fin" type="password" [(ngModel)]="passwordData.oldPassword" placeholder="••••••••" />
+              </div>
+              <div class="ffield">
+                <div class="flbl">Nouveau mot de passe</div>
+                <input class="fin" type="password" [(ngModel)]="passwordData.newPassword" placeholder="••••••••" />
+              </div>
+            </div>
+            <button class="btn-save" (click)="changePassword()">Modifier</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

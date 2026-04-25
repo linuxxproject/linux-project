@@ -1,0 +1,12 @@
+.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.filter-row { display: flex; gap: 4px; }
+.filter-btn { font-size: 11px; padding: 4px 10px; border-radius: 20px; cursor: pointer; border: 1px solid var(--gray-200); color: var(--gray-500); background: white; }
+.filter-btn.on { background: var(--blue-light); color: var(--blue-dark); border-color: var(--blue-mid); font-weight: 500; }
+.table-card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
+.tr { display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr 1.5fr; align-items: center; gap: 8px; font-size: 11px; padding: 6px 0; border-bottom: 1px solid var(--gray-100); }
+.tr:last-child { border-bottom: none; }
+.tr.header { font-weight: 600; color: var(--gray-500); border-bottom: 1px solid var(--gray-200); padding-bottom: 8px; }
+.actions { display: flex; gap: 6px; }
+.btn-xs { font-size: 10px; padding: 3px 10px; }
+.c-last { font-size: 10px; color: var(--gray-400); }
+

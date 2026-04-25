@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -11,10 +11,11 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   errorMessage: string = '';
   isLoading: boolean = false;
+  showPassword: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -27,8 +28,23 @@ export class LoginComponent {
     });
   }
 
+  ngOnInit(): void {
+    // Si déjà connecté, rediriger
+    if (this.authService.isLoggedIn()) {
+      const role = this.authService.getUserRole();
+      this.redirectByRole(role);
+    }
+  }
+
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+  }
+
   onSubmit(): void {
-    if (this.loginForm.invalid) return;
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
 
     this.isLoading = true;
     this.errorMessage = '';
@@ -36,21 +52,30 @@ export class LoginComponent {
     this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
         this.isLoading = false;
-        // Redirection selon le rôle
         const role = response.user?.role;
-        if (role === 'client') {
-          this.router.navigate(['/client/dashboard']);
-        } else if (role === 'freelance') {
-          this.router.navigate(['/freelance/dashboard']);
-        } else {
-          this.router.navigate(['/']);
-        }
+        this.redirectByRole(role);
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Email ou mot de passe incorrect';
+        if (err.error?.errors?.email) {
+          this.errorMessage = err.error.errors.email[0];
+        } else {
+          this.errorMessage = err.error?.message || 'Email ou mot de passe incorrect';
+        }
       }
     });
+  }
+
+  private redirectByRole(role: string | null): void {
+    if (role === 'client') {
+      this.router.navigate(['/client/dashboard']);
+    } else if (role === 'freelance') {
+      this.router.navigate(['/freelance/dashboard']);
+    } else if (role === 'admin') {
+      this.router.navigate(['/admin/dashboard']);
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 
   get email() { return this.loginForm.get('email'); }

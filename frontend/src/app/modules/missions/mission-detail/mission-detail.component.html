@@ -1,0 +1,61 @@
+<div class="layout">
+  <app-sidebar [role]="role" [activeRoute]="'/missions'"></app-sidebar>
+
+  <div class="content">
+    <app-header
+      [role]="role === 'client' ? 'Client' : role === 'freelance' ? 'Freelance' : 'Admin'"
+      [userName]="user?.name"
+      [initials]="getInitials(user?.name)">
+    </app-header>
+
+    <div class="app-main">
+      <div class="pg-title">Détail de la mission</div>
+
+      <p *ngIf="loading" style="font-size:12px;color:var(--gray-400);">Chargement...</p>
+      <p *ngIf="error" style="font-size:12px;color:var(--red);">{{ error }}</p>
+
+      <div class="detail-layout" *ngIf="mission">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="dcard">
+            <div class="d-title">{{ mission.title }}</div>
+            <div class="d-meta">
+              <span class="badge" [class.b-open]="mission.status === 'ouverte'" [class.b-progress]="mission.status === 'en_cours'" [class.b-closed]="mission.status === 'fermee'">
+                {{ formatStatus(mission.status) }}
+              </span>
+              <span class="skill-tag" *ngIf="mission.category">{{ mission.category }}</span>
+            </div>
+            <div class="d-desc">{{ mission.description }}</div>
+
+          <div class="dcard" *ngIf="mission.skills?.length">
+            <div class="d-sub">Compétences requises</div>
+            <div class="skills-wrap">
+              <span class="skill-tag" *ngFor="let s of mission.skills">{{ s }}</span>
+            </div>
+        </div>
+
+        <div class="dcard">
+          <div class="client-row" *ngIf="mission.client">
+            <div class="cl-av">{{ getInitials(mission.client.name) }}</div>
+            <div>
+              <div class="cl-name">{{ mission.client.name }}</div>
+              <div class="cl-sub">Client vérifié</div>
+          </div>
+
+          <div>
+            <div class="irow"><span class="ilbl">Budget</span><span class="ival" style="color:var(--blue);">{{ mission.budget }} MAD</span></div>
+            <div class="irow" *ngIf="mission.deadline"><span class="ilbl">Échéance</span><span class="ival">{{ mission.deadline | date:'dd/MM/yyyy' }}</span></div>
+            <div class="irow" *ngIf="mission.applications_count !== undefined"><span class="ilbl">Candidats</span><span class="ival">{{ mission.applications_count }}</span></div>
+            <div class="irow" *ngIf="mission.created_at"><span class="ilbl">Publiée</span><span class="ival">{{ formatDate(mission.created_at) }}</span></div>
+
+          <button class="btn btn-primary" style="width:100%;height:34px;border-radius:20px;font-size:13px;" (click)="apply()" *ngIf="role === 'freelance' && mission.status === 'ouverte'">
+            Postuler maintenant
+          </button>
+          <button class="btn btn-outline" style="width:100%;height:34px;border-radius:20px;font-size:13px;" (click)="contact()" *ngIf="role === 'freelance'">
+            Contacter le client
+          </button>
+          <button class="btn btn-outline" style="width:100%;height:34px;border-radius:20px;font-size:13px;" (click)="goBack()">
+            Retour
+          </button>
+        </div>
+    </div>
+</div>

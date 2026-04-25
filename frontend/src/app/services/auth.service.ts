@@ -20,27 +20,34 @@ export interface User {
   id: number;
   name: string;
   email: string;
-  role: 'client' | 'freelance';
+  role: 'client' | 'freelance' | 'admin';
+  phone?: string;
+  city?: string;
+  bio?: string;
+  avatar?: string;
+  is_active?: boolean;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  // ✅ CORRECTION : séparé sur deux lignes
   private apiUrl = 'http://localhost:8000/api';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
-  
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(
     private http: HttpClient,
     private router: Router
   ) {
-    // Restaurer l'utilisateur au démarrage
+    // Restaurer l'utilisateur depuis localStorage au démarrage
     const stored = localStorage.getItem('user');
     if (stored) {
-      this.currentUserSubject.next(JSON.parse(stored));
+      try {
+        this.currentUserSubject.next(JSON.parse(stored));
+      } catch {
+        localStorage.removeItem('user');
+      }
     }
   }
 
@@ -59,7 +66,6 @@ export class AuthService {
   }
 
   logout(): void {
-    // Envoyer le token dans le header pour l'authentification
     this.http.post(`${this.apiUrl}/logout`, {}).subscribe({
       next: () => this.clearSession(),
       error: () => this.clearSession()
@@ -87,5 +93,9 @@ export class AuthService {
 
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
+  }
+
+  getMe(): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/me`);
   }
 }

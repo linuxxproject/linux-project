@@ -1,0 +1,46 @@
+<div class="layout">
+  <app-sidebar [role]="'freelance'" [activeRoute]="'/freelance'"></app-sidebar>
+  <div class="content">
+    <app-header [role]="'Freelance'" [userName]="user?.name" [initials]="initials()"></app-header>
+    <div class="app-main">
+      <div class="pg-title">Tableau de bord — Freelance</div>
+      <div class="stats stats-4">
+        <div class="stat" *ngFor="let s of stats">
+          <div class="stat-lbl">{{ s.label }}</div>
+          <div class="stat-val" [style.color]="s.color || '#1e3a8a'">{{ s.value }}</div>
+          <div class="stat-sub">{{ s.sub }}</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <div class="row-header"><div class="row-title">Missions disponibles</div></div>
+          <div class="list">
+            <app-mission-card
+              *ngFor="let m of availableMissions"
+              [title]="m.title"
+              [budget]="m.budget + ' MAD'"
+              [status]="m.status"
+              [meta]="m.description"
+              actionLabel="Postuler"
+              actionType="primary"
+            >
+            </app-mission-card>
+          </div>
+        </div>
+        <div>
+          <div class="row-header"><div class="row-title">Mes candidatures</div></div>
+          <div class="list">
+            <app-mission-card
+              *ngFor="let a of myApplications"
+              [title]="a.mission?.title"
+              [budget]="a.proposed_budget ? a.proposed_budget + ' MAD' : a.mission?.budget + ' MAD'"
+              [status]="a.status"
+              [meta]="a.message || 'Candidature envoyée'"
+            >
+            </app-mission-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

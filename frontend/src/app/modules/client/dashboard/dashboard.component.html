@@ -1,0 +1,44 @@
+<div class="layout">
+  <app-sidebar [role]="'client'" [activeRoute]="'/client'"></app-sidebar>
+
+  <div class="content">
+    <app-header
+      [role]="'Client'"
+      [userName]="user?.name"
+      [initials]="initials()">
+    </app-header>
+
+    <div class="app-main">
+      <div class="pg-title">Tableau de bord — Client</div>
+
+      <div class="stats stats-4">
+        <div class="stat" *ngFor="let s of stats">
+          <div class="stat-lbl">{{ s.label }}</div>
+          <div class="stat-val" [style.color]="s.color || '#1e3a8a'">
+            {{ s.value }}
+          </div>
+          <div class="stat-sub">{{ s.sub }}</div>
+        </div>
+      </div>
+
+      <div class="row-header">
+        <div class="row-title">Missions récentes</div>
+        <button class="btn-sm-add" routerLink="/missions">+ Nouvelle mission</button>
+      </div>
+
+      <div class="list" *ngIf="missions.length > 0">
+        <app-mission-card
+          *ngFor="let m of missions.slice(0, 5)"
+          [title]="m.title"
+          [budget]="m.budget + ' MAD'"
+          [status]="formatStatus(m.status)"
+          [meta]="(m.applications_count || 0) + ' candidats · ' + formatDate(m.created_at)">
+        </app-mission-card>
+      </div>
+
+      <div class="empty-box" *ngIf="missions.length === 0">
+        Aucune mission publiée pour le moment.
+      </div>
+    </div>
+  </div>
+</div>
