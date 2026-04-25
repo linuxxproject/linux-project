@@ -27,8 +27,10 @@ export interface User {
   providedIn: 'root'
 })
 export class AuthService {
+  // ✅ CORRECTION : séparé sur deux lignes
   private apiUrl = 'http://localhost:8000/api';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
+  
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(
@@ -57,6 +59,7 @@ export class AuthService {
   }
 
   logout(): void {
+    // Envoyer le token dans le header pour l'authentification
     this.http.post(`${this.apiUrl}/logout`, {}).subscribe({
       next: () => this.clearSession(),
       error: () => this.clearSession()

@@ -17,3 +17,6 @@ Route::middleware(['auth:api'])->group(function () {
     Route::put('/admin/users/{id}/toggle', [AdminController::class, 'toggleStatus']);
     Route::delete('/admin/users/{id}',     [AdminController::class, 'destroy']);
 });
+Route::post('/debug', function () {
+    return response()->json(['ok' => true]);
+});

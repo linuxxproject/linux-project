@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+
+// Guards
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
 
@@ -16,12 +18,15 @@ import { CandidaturesRecuesComponent } from './client/candidatures-recues/candid
 const clientGuard = roleGuard(['client']);
 
 export const routes: Routes = [
-  // Public routes
+  // Route racine → login directement
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  
+  // Auth
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
 
-  // Protected client routes
+  // Client protégé
   {
     path: 'client',
     canActivate: [authGuard],
@@ -33,7 +38,6 @@ export const routes: Routes = [
     ]
   },
 
-  // Redirections
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  // Fallback
   { path: '**', redirectTo: '/login' }
 ];

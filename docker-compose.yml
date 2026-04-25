@@ -41,10 +41,14 @@ services:
     networks:
       - app_network  
   angular:
-    image: mohamed142/my-angular-app:latest
+    image: node:20
     container_name: angular_app
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    command: sh -c "npm install && npx ng serve --host 0.0.0.0 --port 4200"
     ports:
-      - "4200:80"
+      - "4200:4200"
     networks:
       - app_network
 
