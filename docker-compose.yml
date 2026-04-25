@@ -53,6 +53,20 @@ services:
     networks:
       - app_network
 
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin_tool
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql_db
+      PMA_USER: laravel
+      PMA_PASSWORD: secret
+    depends_on:
+      - mysql
+    networks:
+      - app_network
+
 networks:
   app_network:
 
