@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ResetPasswordMail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -114,18 +116,51 @@ class AuthController extends Controller
                 ['email' => $request->email],
                 [
                     'email' => $request->email,
-                    'token' => Hash::make($token),
+                    'token' => $token,
                     'created_at' => now(),
                 ]
             );
 
-            // Ici tu peux envoyer l'email avec le token
-            // Mail::to($user->email)->send(new ResetPasswordMail($token));
+            // Envoyer l'email avec le token
+            try {
+                Mail::to($user->email)->send(new ResetPasswordMail($token, $user->email));
+            } catch (\Exception $e) {
+                // Log the error but still return success for security
+                \Log::error('Failed to send reset password email: ' . $e->getMessage());
+            }
         }
 
         return response()->json([
-            'message' => 'Si cet email existe, un lien de réinitialisation a été envoyé.',
+            'message' => 'Si cet email existe, un lien de reinitialisation a ete envoye.',
         ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required|string',
+            'password' => 'required|string|min:6',
+        ]);
+
+        $resetRecord = DB::table('password_reset_tokens')
+            ->where('token', $request->token)
+            ->first();
+
+        if (!$resetRecord) {
+            return response()->json(['message' => 'Token de reinitialisation invalide'], 400);
+        }
+
+        $user = User::where('email', $resetRecord->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Utilisateur non trouve'], 404);
+        }
+
+        $user->update(['password' => Hash::make($request->password)]);
+
+        DB::table('password_reset_tokens')->where('email', $resetRecord->email)->delete();
+
+        return response()->json(['message' => 'Mot de passe reinitialise avec succes']);
     }
 
     public function users(Request $request)
