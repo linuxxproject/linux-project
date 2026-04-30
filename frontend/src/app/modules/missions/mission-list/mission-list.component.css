@@ -1,7 +1,0 @@
-.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.filter-row { display: flex; gap: 4px; }
-.filter-btn { font-size: 11px; padding: 4px 10px; border-radius: 20px; cursor: pointer; border: 1px solid var(--gray-200); color: var(--gray-500); background: white; }
-.filter-btn.on { background: var(--blue-light); color: var(--blue-dark); border-color: var(--blue-mid); font-weight: 500; }
-.search input { height: 30px; border: 1px solid var(--gray-200); border-radius: 20px; padding: 0 12px; font-size: 12px; width: 180px; background: white; outline: none; }
-.list { display: flex; flex-direction: column; gap: 8px; }
-
