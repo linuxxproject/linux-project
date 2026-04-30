@@ -96,3 +96,4 @@ export class CandidatureTrackerComponent implements OnInit {
     });
   }
 }
+
