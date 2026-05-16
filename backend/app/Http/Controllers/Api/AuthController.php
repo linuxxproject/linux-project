@@ -8,9 +8,11 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -76,19 +78,24 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $user = $this->authenticatedUser($request);
+        $token = $user->currentAccessToken();
+
+        if ($token instanceof PersonalAccessToken) {
+            $token->delete();
+        }
 
         return response()->json(['message' => 'Déconnexion réussie']);
     }
 
     public function me(Request $request)
     {
-        return response()->json($request->user());
+        return response()->json($this->authenticatedUser($request));
     }
 
     public function updateProfile(Request $request)
     {
-        $user = $request->user();
+        $user = $this->authenticatedUser($request);
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -126,7 +133,7 @@ class AuthController extends Controller
                 Mail::to($user->email)->send(new ResetPasswordMail($token, $user->email));
             } catch (\Exception $e) {
                 // Log the error but still return success for security
-                \Log::error('Failed to send reset password email: ' . $e->getMessage());
+                Log::error('Failed to send reset password email: ' . $e->getMessage());
             }
         }
 
@@ -165,11 +172,21 @@ class AuthController extends Controller
 
     public function users(Request $request)
     {
-        $users = User::where('id', '!=', $request->user()->id)
+        $user = $this->authenticatedUser($request);
+
+        $users = User::where('id', '!=', $user->id)
             ->select('id', 'name', 'email', 'role')
             ->orderBy('name')
             ->get();
 
         return response()->json($users);
+    }
+
+    private function authenticatedUser(Request $request): User
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        return $user;
     }
 }

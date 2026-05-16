@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,7 @@ class MessageController extends Controller
         try {
             $user = Auth::user();
 
-            if (!$user) {
+            if (!$user instanceof User) {
                 return response()->json(['message' => 'Non authentifie.'], 401);
             }
 

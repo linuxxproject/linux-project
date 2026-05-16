@@ -33,6 +33,13 @@ jobs:
 
       - name: Run backend tests
         working-directory: backend
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ":memory:"
+          SESSION_DRIVER: array
+          CACHE_STORE: array
+          QUEUE_CONNECTION: sync
         run: php artisan test
 
   deploy:

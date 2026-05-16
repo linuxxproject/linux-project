@@ -32,6 +32,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/missions', [MissionController::class, 'index']);
     Route::post('/missions', [MissionController::class, 'store']);
     Route::get('/missions/my', [MissionController::class, 'myMissions']);
+    Route::get('/missions/mes-missions', [MissionController::class, 'myMissions']);
+    Route::get('/missions/{mission}/candidatures', [MissionController::class, 'candidatures']);
     Route::get('/missions/{mission}', [MissionController::class, 'show']);
     Route::put('/missions/{mission}', [MissionController::class, 'update']);
     Route::delete('/missions/{mission}', [MissionController::class, 'destroy']);

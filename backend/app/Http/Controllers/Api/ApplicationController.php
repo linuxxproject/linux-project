@@ -7,6 +7,7 @@ use App\Models\Application;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\Mission;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,10 @@ class ApplicationController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+
+        if (!$user instanceof User) {
+            return response()->json(['message' => 'Non authentifie.'], 401);
+        }
 
         if ($user->isClient()) {
             $applications = Application::whereHas('mission', function ($q) use ($user) {
@@ -87,9 +92,10 @@ class ApplicationController extends Controller
     {
         $user = Auth::user();
 
-        $isAuthorized = $user->isAdmin()
+        $isAuthorized = $user instanceof User
+            && ($user->isAdmin()
             || $application->freelance_id === $user->id
-            || ($application->mission && $application->mission->client_id === $user->id);
+            || ($application->mission && $application->mission->client_id === $user->id));
 
         if (!$isAuthorized) {
             return response()->json(['message' => 'Non autorisé.'], 403);
@@ -108,7 +114,7 @@ class ApplicationController extends Controller
     {
         $application->load('mission:id,client_id,title,status', 'freelance:id,name');
 
-        if ($application->mission->client_id !== Auth::id() && !Auth::user()->isAdmin()) {
+        if (!$this->canManageApplicationMission($application)) {
             return response()->json(['message' => 'Non autorisé.'], 403);
         }
 
@@ -171,9 +177,10 @@ class ApplicationController extends Controller
 
         $user = Auth::user();
 
-        $isAuthorized = $user->isAdmin()
+        $isAuthorized = $user instanceof User
+            && ($user->isAdmin()
             || $application->freelance_id === $user->id
-            || $application->mission->client_id === $user->id;
+            || $application->mission->client_id === $user->id);
 
         if (!$isAuthorized) {
             return response()->json(['message' => 'Non autorisé.'], 403);
@@ -182,6 +189,14 @@ class ApplicationController extends Controller
         $application->delete();
 
         return response()->json(['message' => 'Candidature retirée']);
+    }
+
+    private function canManageApplicationMission(Application $application): bool
+    {
+        $user = Auth::user();
+
+        return $user instanceof User
+            && ($application->mission->client_id === $user->id || $user->isAdmin());
     }
 
     private function sendApplicationMessage(int $senderId, int $recipientId, string $content): void
