@@ -18,7 +18,7 @@ class MessageController extends Controller
             $user = Auth::user();
 
             if (!$user) {
-                return response()->json(['message' => 'Non authentifié.'], 401);
+                return response()->json(['message' => 'Non authentifie.'], 401);
             }
 
             $conversations = $user
@@ -28,9 +28,12 @@ class MessageController extends Controller
                 ->latest('updated_at')
                 ->get();
 
-            // Charger le dernier message manuellement pour éviter les problèmes avec latestOfMany
             $conversations->each(function ($conversation) {
                 $conversation->last_message = $conversation->messages()->latest('created_at')->first();
+                $conversation->unread_count = $conversation->messages()
+                    ->where('sender_id', '!=', Auth::id())
+                    ->where('is_read', false)
+                    ->count();
                 unset($conversation->messages);
             });
 
@@ -45,7 +48,7 @@ class MessageController extends Controller
     {
         try {
             if (!$conversation->participants->contains(Auth::id())) {
-                return response()->json(['message' => 'Accès non autorisé.'], 403);
+                return response()->json(['message' => 'Acces non autorise.'], 403);
             }
 
             $messages = $conversation->messages()
@@ -53,7 +56,6 @@ class MessageController extends Controller
                 ->latest()
                 ->paginate(50);
 
-            // Marquer les messages non lus comme lus
             $conversation->messages()
                 ->where('sender_id', '!=', Auth::id())
                 ->where('is_read', false)
@@ -71,12 +73,12 @@ class MessageController extends Controller
         try {
             $authId = Auth::id();
             if (!$authId) {
-                return response()->json(['message' => 'Non authentifié.'], 401);
+                return response()->json(['message' => 'Non authentifie.'], 401);
             }
 
             $isParticipant = $conversation->participants()->where('user_id', $authId)->exists();
             if (!$isParticipant) {
-                return response()->json(['message' => 'Accès non autorisé. Vous n\'êtes pas participant de cette conversation.'], 403);
+                return response()->json(['message' => 'Acces non autorise. Vous n\'etes pas participant de cette conversation.'], 403);
             }
 
             $validated = $request->validate([
@@ -91,13 +93,11 @@ class MessageController extends Controller
             ]);
 
             $message->load('sender:id,name');
-
-            // Mettre à jour le updated_at de la conversation pour le tri
             $conversation->touch();
 
             return response()->json($message, 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['message' => 'Données invalides.', 'errors' => $e->errors()], 422);
+            return response()->json(['message' => 'Donnees invalides.', 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             Log::error('Erreur sendMessage: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return response()->json(['message' => 'Erreur serveur.', 'error' => $e->getMessage()], 500);
@@ -116,10 +116,9 @@ class MessageController extends Controller
             $recipientId = (int) $validated['user_id'];
 
             if ($authId === $recipientId) {
-                return response()->json(['message' => 'Vous ne pouvez pas démarrer une conversation avec vous-même.'], 422);
+                return response()->json(['message' => 'Vous ne pouvez pas demarrer une conversation avec vous-meme.'], 422);
             }
 
-            // Vérifier si une conversation existe déjà entre ces 2 utilisateurs
             $existingConversation = Conversation::whereHas('participants', function ($query) use ($authId) {
                 $query->where('user_id', $authId);
             })->whereHas('participants', function ($query) use ($recipientId) {
@@ -127,7 +126,6 @@ class MessageController extends Controller
             })->has('participants', '=', 2)->first();
 
             if ($existingConversation) {
-                // Si la conversation existe, on envoie simplement le message dedans
                 $message = Message::create([
                     'conversation_id' => $existingConversation->id,
                     'sender_id' => $authId,
@@ -143,10 +141,8 @@ class MessageController extends Controller
                 ], 201);
             }
 
-            // Créer une nouvelle conversation
             $conversation = DB::transaction(function () use ($authId, $recipientId, $validated) {
                 $newConversation = Conversation::create();
-
                 $newConversation->participants()->attach([$authId, $recipientId]);
 
                 Message::create([
@@ -164,23 +160,19 @@ class MessageController extends Controller
                 201
             );
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['message' => 'Données invalides.', 'errors' => $e->errors()], 422);
+            return response()->json(['message' => 'Donnees invalides.', 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             Log::error('Erreur startConversation: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return response()->json(['message' => 'Erreur serveur.', 'error' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Angular compatibility: POST /messages
-     */
     public function sendOrStart(Request $request)
     {
         try {
             if ($request->has('conversation_id')) {
                 $conversation = Conversation::findOrFail($request->conversation_id);
 
-                // Mapper 'message' vers 'content' pour la compatibilité Angular/sendMessage
                 if ($request->has('message')) {
                     $request->merge(['content' => $request->input('message')]);
                 }
@@ -193,7 +185,7 @@ class MessageController extends Controller
             }
 
             return response()->json([
-                'message' => 'Paramètres invalides. Nécessite conversation_id ou (user_id + message).'
+                'message' => 'Parametres invalides. Necessite conversation_id ou (user_id + message).'
             ], 422);
         } catch (\Exception $e) {
             Log::error('Erreur sendOrStart: ' . $e->getMessage());
@@ -201,4 +193,3 @@ class MessageController extends Controller
         }
     }
 }
-

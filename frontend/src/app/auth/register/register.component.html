@@ -52,7 +52,7 @@
           type="password" 
           id="password"
           formControlName="password" 
-          placeholder="••••••"
+          placeholder="******"
           [class.error]="password?.invalid && password?.touched"
         >
         <div class="error-text" *ngIf="password?.invalid && password?.touched">
@@ -67,7 +67,7 @@
           type="password" 
           id="password_confirmation"
           formControlName="password_confirmation" 
-          placeholder="••••••"
+          placeholder="******"
           [class.error]="registerForm.errors?.['mismatch'] && passwordConfirmation?.touched"
         >
         <div class="error-text" *ngIf="registerForm.errors?.['mismatch'] && passwordConfirmation?.touched">

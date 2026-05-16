@@ -166,3 +166,4 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     return message.sender_id === this.user?.id;
   }
 }
+

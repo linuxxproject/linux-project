@@ -9,9 +9,8 @@
     </app-header>
 
     <div class="app-main">
-      <div class="pg-title">Mes candidatures</div>
+      <div class="pg-title">{{ pageTitle }}</div>
 
-      <!-- Statistiques -->
       <div class="stats stats-4">
         <div class="stat">
           <div class="stat-lbl">Total</div>
@@ -40,38 +39,24 @@
         </div>
       </div>
 
-      <!-- Tabs -->
       <div class="tabs">
-        <div
-          class="tab"
-          [class.on]="filter === 'all'"
-          (click)="filter = 'all'">
+        <div class="tab" [class.on]="filter === 'all'" (click)="filter = 'all'">
           Toutes
         </div>
 
-        <div
-          class="tab"
-          [class.on]="filter === 'accepted'"
-          (click)="filter = 'accepted'">
+        <div class="tab" [class.on]="filter === 'accepted'" (click)="filter = 'accepted'">
           Acceptées
         </div>
 
-        <div
-          class="tab"
-          [class.on]="filter === 'pending'"
-          (click)="filter = 'pending'">
+        <div class="tab" [class.on]="filter === 'pending'" (click)="filter = 'pending'">
           En attente
         </div>
 
-        <div
-          class="tab"
-          [class.on]="filter === 'rejected'"
-          (click)="filter = 'rejected'">
+        <div class="tab" [class.on]="filter === 'rejected'" (click)="filter = 'rejected'">
           Refusées
         </div>
       </div>
 
-      <!-- Messages -->
       <p *ngIf="loading" style="font-size:12px;color:var(--gray-400);">
         Chargement des candidatures...
       </p>
@@ -80,7 +65,6 @@
         {{ error }}
       </p>
 
-      <!-- Tableau -->
       <div class="tbl" *ngIf="filtered.length > 0">
         <div class="tr tr-4 hd">
           <div>Mission</div>
@@ -92,6 +76,9 @@
         <div class="tr tr-4" *ngFor="let c of filtered">
           <div style="font-size:12px;">
             {{ c.mission?.title || 'Mission' }}
+            <div *ngIf="role === 'client'" style="font-size:10px;color:var(--gray-400);margin-top:3px;">
+              {{ c.freelance?.name || 'Freelance' }}
+            </div>
           </div>
 
           <div style="font-size:12px;color:#1a56db;font-weight:600;">
@@ -108,18 +95,44 @@
             </span>
           </div>
 
-          <div>
+          <div class="application-actions">
             <button
               class="btn btn-outline"
               style="font-size:10px;padding:3px 10px;"
               (click)="viewMission(c.mission?.id)">
               Voir
             </button>
+
+            <button
+              class="btn btn-primary"
+              style="font-size:10px;padding:3px 10px;"
+              *ngIf="canModerate(c)"
+              [disabled]="statusActionId === c.id"
+              (click)="accept(c.id)">
+              Accepter
+            </button>
+
+            <button
+              class="btn btn-danger"
+              style="font-size:10px;padding:3px 10px;"
+              *ngIf="canModerate(c)"
+              [disabled]="statusActionId === c.id"
+              (click)="reject(c.id)">
+              Refuser
+            </button>
+
+            <button
+              class="btn btn-success"
+              style="font-size:10px;padding:3px 10px;"
+              *ngIf="canComplete(c)"
+              [disabled]="statusActionId === c.id"
+              (click)="complete(c.id)">
+              Terminer
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Empty -->
       <div class="empty-box" *ngIf="!loading && filtered.length === 0">
         Aucune candidature trouvée.
       </div>

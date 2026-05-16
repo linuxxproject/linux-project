@@ -3,10 +3,10 @@
   <aside class="sidebar">
     <div class="logo"><h3>Mon Espace</h3></div>
     <nav>
-      <a routerLink="/client/dashboard">📊 Tableau de bord</a>
-      <a routerLink="/client/publier-mission">➕ Publier une mission</a>
-      <a routerLink="/client/mes-missions" class="active">📋 Mes missions</a>
-      <a routerLink="/client/candidatures">👥 Candidatures reçues</a>
+      <a routerLink="/client/dashboard">ðŸ“Š Tableau de bord</a>
+      <a routerLink="/client/publier-mission">âž• Publier une mission</a>
+      <a routerLink="/client/mes-missions" class="active">ðŸ“‹ Mes missions</a>
+      <a routerLink="/client/candidatures">ðŸ‘¥ Candidatures reçues</a>
     </nav>
   </aside>
 
@@ -35,14 +35,14 @@
         
         <div class="mission-footer">
           <div class="meta">
-            <span>💰 {{ mission.budget }} €</span>
-            <span>📁 {{ mission.categorie }}</span>
-            <span>📅 {{ mission.date_echeance | date:'dd/MM/yyyy' }}</span>
+            <span>ðŸ’° {{ mission.budget }} â‚¬</span>
+            <span>ðŸ“ {{ mission.categorie }}</span>
+            <span>ðŸ“… {{ mission.date_echeance | date:'dd/MM/yyyy' }}</span>
           </div>
           
           <div class="actions">
-            <button class="btn-edit">✏️ Modifier</button>
-            <button class="btn-delete" (click)="deleteMission(mission.id)">🗑️ Supprimer</button>
+            <button class="btn-edit">âœï¸ Modifier</button>
+            <button class="btn-delete" (click)="deleteMission(mission.id)">ðŸ—‘ï¸ Supprimer</button>
           </div>
         </div>
       </div>

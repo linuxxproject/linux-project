@@ -49,9 +49,9 @@
           [status]="formatStatus(m.status)"
           [meta]="m.category || 'Général'"
           [description]="m.description"
-          [actionLabel]="role === 'freelance' && m.status === 'ouverte' ? 'Postuler' : 'Voir détail'"
-          [actionType]="role === 'freelance' && m.status === 'ouverte' ? 'primary' : 'outline'"
-          (action)="role === 'freelance' && m.status === 'ouverte' ? apply(m.id) : view(m.id)">
+          actionLabel="Voir détail"
+          actionType="outline"
+          (action)="view(m.id)">
         </app-mission-card>
       </div>
 

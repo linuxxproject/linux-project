@@ -100,7 +100,7 @@ export class MissionListComponent implements OnInit {
         alert('Candidature envoyée avec succès.');
       },
       error: (err) => {
-        alert(err.error?.message || 'Erreur lors de l’envoi de la candidature.');
+        alert(err.error?.message || "Erreur lors de l'envoi de la candidature.");
       }
     });
   }
