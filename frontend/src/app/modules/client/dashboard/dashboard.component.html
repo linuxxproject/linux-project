@@ -1,0 +1,116 @@
+<div class="layout">
+  <app-sidebar [role]="'client'" [activeRoute]="'/client'"></app-sidebar>
+
+  <div class="content">
+    <app-header
+      [role]="'Client'"
+      [userName]="user?.name"
+      [initials]="initials()">
+    </app-header>
+
+    <div class="app-main">
+      <div class="pg-title">Tableau de bord - Client</div>
+
+      <div class="stats stats-4">
+        <div class="stat" *ngFor="let s of stats">
+          <div class="stat-lbl">{{ s.label }}</div>
+          <div class="stat-val" [style.color]="s.color || '#1e3a8a'">
+            {{ s.value }}
+          </div>
+          <div class="stat-sub">{{ s.sub }}</div>
+        </div>
+      </div>
+
+      <div class="row-header">
+        <div class="row-title">Missions récentes</div>
+        <button class="btn-sm-add" type="button" (click)="openMissionModal()">+ Nouvelle mission</button>
+      </div>
+
+      <div class="list" *ngIf="missions.length > 0">
+        <div class="mission-row" *ngFor="let m of missions.slice(0, 5)">
+          <app-mission-card
+            [title]="m.title"
+            [budget]="m.budget + ' MAD'"
+            [status]="formatStatus(m.status)"
+            [meta]="(m.applications_count || 0) + ' candidats - ' + formatDate(m.created_at)">
+          </app-mission-card>
+
+          <div class="mission-actions">
+            <button
+              class="mission-edit"
+              type="button"
+              [disabled]="deletingMissionId === m.id"
+              (click)="openEditMissionModal(m)">
+              Modifier
+            </button>
+
+            <button
+              class="mission-delete"
+              type="button"
+              [disabled]="deletingMissionId === m.id"
+              (click)="deleteMission(m)">
+              {{ deletingMissionId === m.id ? 'Suppression...' : 'Supprimer' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty-box" *ngIf="missions.length === 0">
+        Aucune mission publiée pour le moment.
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="showMissionModal" (click)="closeMissionModal()">
+    <div class="mission-modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title">{{ editingMissionId ? 'Modifier la mission' : 'Nouvelle mission' }}</div>
+          <div class="modal-sub">
+            {{ editingMissionId ? 'Mettez à jour les informations avant de republier.' : 'Ajoutez les informations importantes pour les freelances.' }}
+          </div>
+        </div>
+        <button class="modal-close" type="button" (click)="closeMissionModal()">x</button>
+      </div>
+
+      <div class="modal-error" *ngIf="missionError">{{ missionError }}</div>
+
+      <div class="modal-form">
+        <label>
+          <span>Titre de la mission *</span>
+          <input type="text" [(ngModel)]="newMission.title" placeholder="Ex: Développement App Mobile React Native">
+        </label>
+
+        <label>
+          <span>Description détaillée *</span>
+          <textarea rows="5" [(ngModel)]="newMission.description" placeholder="Expliquez le besoin, les livrables et le contexte du projet."></textarea>
+        </label>
+
+        <div class="modal-grid">
+          <label>
+            <span>Budget (MAD) *</span>
+            <input type="number" min="0" [(ngModel)]="newMission.budget" placeholder="5000">
+          </label>
+
+          <label>
+            <span>Échéance</span>
+            <input type="date" [(ngModel)]="newMission.deadline">
+          </label>
+        </div>
+
+        <label>
+          <span>Compétences requises</span>
+          <input type="text" [(ngModel)]="newMission.skillsText" placeholder="React Native, JavaScript, API REST">
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-outline" type="button" (click)="closeMissionModal()">Annuler</button>
+        <button class="btn btn-primary" type="button" (click)="saveMission()" [disabled]="savingMission">
+          {{ savingMission ? 'Enregistrement...' : editingMissionId ? 'Publier les modifications' : 'Publier la mission' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

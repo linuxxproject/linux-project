@@ -1,33 +1,60 @@
-*.log
-.DS_Store
+# ============================================
+# Freelance Pro - Fichiers ignores par Git
+# ============================================
+
+# --- Environnement & Secrets ---
 .env
+.env.local
+.env.*.local
 .env.backup
 .env.production
-.phpactor.json
-.phpunit.result.cache
-/.cursor/
+!.env.example
+
+# Backend (deja gere par le .gitignore du backend)
+backend/.env
+backend/.env.local
+backend/.env.*.local
+backend/.env.backup
+!backend/.env.example
+
+# --- IDE & Editeurs ---
 /.idea
-/.nova
-/.phpunit.cache
 /.vscode
+/.cursor/
+/.nova
 /.zed
-/auth.json
+.phpactor.json
+_ide_helper.php
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Dependances ---
+/vendor
 /node_modules
+/backend/vendor
+/frontend/node_modules
+/auth.json
+
+# --- Laravel / Build ---
 /public/build
 /public/hot
 /public/storage
 /storage/*.key
 /storage/pail
-/vendor
-_ide_helper.php
 Homestead.json
 Homestead.yaml
-Thumbs.db
-/vendor
-/node_modules
-.env
-.env.backup
-/storage/*.key
-/.idea
-/.vscode
-docker-compose/
+
+# --- Tests & Cache ---
+.phpunit.result.cache
+/.phpunit.cache
+
+# --- Docker ---
+docker-compose.override.yml
+
+# --- Terraform (a ajouter plus tard) ---
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars

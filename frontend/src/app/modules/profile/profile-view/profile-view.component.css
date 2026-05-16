@@ -1,0 +1,224 @@
+/* Layout 2 colonnes */
+.profile-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.profile-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Avatar card */
+.pcard {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.p-av {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--blue-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--blue-dark);
+}
+
+.p-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.p-bio {
+  font-size: 11px;
+  color: var(--gray-400);
+  line-height: 1.5;
+}
+
+/* Progress bar */
+.prog-wrap {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.prog-lbl {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--gray-400);
+  margin-bottom: 3px;
+}
+
+.prog-bar {
+  height: 4px;
+  background: var(--gray-100);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.prog-fill {
+  height: 100%;
+  background: var(--blue-mid);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Info card */
+.info-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+}
+
+.irow {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--gray-100);
+  font-size: 11px;
+}
+
+.irow:last-child {
+  border-bottom: none;
+}
+
+.ilbl {
+  color: var(--gray-400);
+}
+
+.ival {
+  color: var(--gray-900);
+  font-weight: 500;
+}
+
+/* Skills */
+.skills-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.skill-tag {
+  font-size: 10px;
+  padding: 3px 8px;
+  background: var(--blue-light);
+  color: var(--blue-dark);
+  border-radius: 20px;
+}
+
+/* Form sections */
+.form-sec {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-sec-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-700);
+  margin-bottom: 4px;
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.ffield {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.flbl {
+  font-size: 10px;
+  color: var(--gray-400);
+}
+
+.fin {
+  height: 32px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  padding: 0 10px;
+  font-size: 12px;
+  color: var(--gray-700);
+  background: var(--gray-50);
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.fin:focus {
+  border-color: var(--blue-mid);
+}
+
+.ftxt {
+  min-height: 60px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 12px;
+  color: var(--gray-700);
+  background: var(--gray-50);
+  outline: none;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.ftxt:focus {
+  border-color: var(--blue-mid);
+}
+
+.fin:disabled {
+  background: var(--gray-100);
+  color: var(--gray-400);
+  cursor: not-allowed;
+}
+
+.btn-save {
+  align-self: flex-end;
+  font-size: 11px;
+  padding: 6px 18px;
+  background: var(--blue-mid);
+  color: white;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.btn-save:hover {
+  opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
