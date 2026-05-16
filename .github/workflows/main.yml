@@ -1,10 +1,10 @@
-name: CI Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [develop]
+    branches: [main, develop]
   pull_request:
-    branches: [develop]
+    branches: [main, develop]
 
 jobs:
   ci:
@@ -12,13 +12,60 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Lint
-        run: echo "No lint yet"
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mbstring, pdo_mysql, sqlite3
+          coverage: none
 
-      - name: Build
-        run: echo "No build yet"
+      - name: Install backend dependencies
+        working-directory: backend
+        run: composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Run tests
-        run: echo "No tests yet"
+      - name: Prepare Laravel environment
+        working-directory: backend
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Run backend tests
+        working-directory: backend
+        run: php artisan test
+
+  deploy:
+    needs: ci
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Upload project to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          target: ~/app
+          source: "docker-compose.yml,backend,frontend"
+          overwrite: true
+
+      - name: Deploy with Docker Compose
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          script: |
+            cd ~/app
+            if [ ! -f backend/.env ]; then cp backend/.env.example backend/.env; fi
+            docker compose pull
+            docker compose up -d --remove-orphans
+            docker compose exec -T -u root laravel composer install --no-interaction --prefer-dist --no-progress --optimize-autoloader
+            docker compose exec -T -u root laravel chown -R laravel:www-data storage bootstrap/cache vendor
+            if grep -q '^APP_KEY=$' backend/.env; then docker compose exec -T laravel php artisan key:generate --force; fi
+            docker compose exec -T laravel php artisan migrate --force

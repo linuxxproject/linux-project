@@ -1,0 +1,6 @@
+aws_region     = "eu-west-3"
+ssh_public_key = "ssh-rsa AAAA... deploy-linux-project"
+
+server_name   = "freelance-pro-server"
+instance_type = "t3.micro"
+app_directory = "/home/ubuntu/app"
