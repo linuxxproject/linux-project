@@ -71,6 +71,7 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
+          command_timeout: 30m
           script: |
             cd ~/app
             if [ ! -f backend/.env ]; then cp backend/.env.example backend/.env; fi
