@@ -18,7 +18,7 @@
     <div class="auth-field">
       <label>Mot de passe</label>
       <div class="password-input-wrapper">
-        <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" placeholder="••••••••" />
+        <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" placeholder="********" />
         <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" title="Afficher/Masquer le mot de passe">
           <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -44,4 +44,5 @@
     </div>
   </div>
 </div>
+
 

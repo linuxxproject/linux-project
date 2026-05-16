@@ -27,6 +27,10 @@ export class ApplicationService {
     return this.http.put(`${API_URL}/applications/${id}/status`, { status });
   }
 
+  complete(id: number): Observable<any> {
+    return this.http.put(`${API_URL}/applications/${id}/complete`, {});
+  }
+
   delete(id: number): Observable<any> {
     return this.http.delete(`${API_URL}/applications/${id}`);
   }

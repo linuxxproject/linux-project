@@ -17,6 +17,7 @@ export class CandidatureTrackerComponent implements OnInit {
   candidatures: any[] = [];
   loading = false;
   error = '';
+  statusActionId: number | null = null;
 
   constructor(
     private router: Router,
@@ -44,10 +45,14 @@ export class CandidatureTrackerComponent implements OnInit {
     });
   }
 
-  get filtered() {
+  get pageTitle(): string {
+    return this.role === 'client' ? 'Candidatures reçues' : 'Mes candidatures';
+  }
+
+  get filtered(): any[] {
     if (this.filter === 'all') return this.candidatures;
 
-    return this.candidatures.filter(c => {
+    return this.candidatures.filter((c) => {
       if (this.filter === 'pending') return c.status === 'en_attente';
       if (this.filter === 'accepted') return c.status === 'acceptee';
       if (this.filter === 'rejected') return c.status === 'refusee';
@@ -56,7 +61,7 @@ export class CandidatureTrackerComponent implements OnInit {
   }
 
   countByStatus(status: string): number {
-    return this.candidatures.filter(c => c.status === status).length;
+    return this.candidatures.filter((c) => c.status === status).length;
   }
 
   formatStatus(status: string): string {
@@ -76,6 +81,18 @@ export class CandidatureTrackerComponent implements OnInit {
       .slice(0, 2);
   }
 
+  canModerate(candidature: any): boolean {
+    return this.role === 'client' && candidature.status === 'en_attente';
+  }
+
+  canComplete(candidature: any): boolean {
+    return (
+      this.role === 'freelance' &&
+      candidature.status === 'acceptee' &&
+      candidature.mission?.status !== 'fermee'
+    );
+  }
+
   viewMission(id: number): void {
     if (id) {
       this.router.navigate(['/missions', id]);
@@ -83,16 +100,48 @@ export class CandidatureTrackerComponent implements OnInit {
   }
 
   accept(id: number): void {
+    this.statusActionId = id;
     this.applicationService.updateStatus(id, 'acceptee').subscribe({
-      next: () => this.loadCandidatures(),
-      error: () => alert('Erreur lors de l\'acceptation.')
+      next: () => {
+        this.statusActionId = null;
+        this.loadCandidatures();
+      },
+      error: (err) => {
+        this.statusActionId = null;
+        alert(err.error?.message || 'Erreur lors de l\'acceptation.');
+      }
     });
   }
 
   reject(id: number): void {
+    this.statusActionId = id;
     this.applicationService.updateStatus(id, 'refusee').subscribe({
-      next: () => this.loadCandidatures(),
-      error: () => alert('Erreur lors du refus.')
+      next: () => {
+        this.statusActionId = null;
+        this.loadCandidatures();
+      },
+      error: (err) => {
+        this.statusActionId = null;
+        alert(err.error?.message || 'Erreur lors du refus.');
+      }
+    });
+  }
+
+  complete(id: number): void {
+    const confirmed = confirm('Marquer cette mission comme terminée ?');
+    if (!confirmed) return;
+
+    this.statusActionId = id;
+    this.applicationService.complete(id).subscribe({
+      next: (res) => {
+        this.statusActionId = null;
+        alert(res?.message || 'Mission terminée. Un message a été envoyé au client.');
+        this.loadCandidatures();
+      },
+      error: (err) => {
+        this.statusActionId = null;
+        alert(err.error?.message || 'Erreur lors de la finalisation de la mission.');
+      }
     });
   }
 }

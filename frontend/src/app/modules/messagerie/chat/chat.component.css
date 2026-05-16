@@ -236,3 +236,26 @@
   font-size: 12px;
   background: var(--gray-50);
 }
+
+@media (max-width: 720px) {
+  .chat-wrap {
+    height: auto;
+    min-height: 0;
+    flex-direction: column;
+  }
+
+  .contacts {
+    width: 100%;
+    max-height: 240px;
+    border-right: none;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  .chat-area {
+    min-height: 420px;
+  }
+
+  .msg {
+    max-width: 86%;
+  }
+}

@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Application;
+use App\Models\Conversation;
+use App\Models\Message;
 use App\Models\Mission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ApplicationController extends Controller
 {
@@ -67,6 +70,16 @@ class ApplicationController extends Controller
             'status' => 'en_attente',
         ]);
 
+        $application->load('freelance:id,name', 'mission:id,client_id,title');
+
+        $this->sendApplicationMessage(
+            Auth::id(),
+            $mission->client_id,
+            "Nouvelle candidature pour la mission \"{$mission->title}\".\n\n"
+            . "Freelance: {$application->freelance->name}\n"
+            . "Message: " . ($application->message ?: 'Le freelance a postulé sans message.')
+        );
+
         return response()->json($application, 201);
     }
 
@@ -93,7 +106,7 @@ class ApplicationController extends Controller
 
     public function updateStatus(Request $request, Application $application)
     {
-        $application->load('mission:id,client_id,status');
+        $application->load('mission:id,client_id,title,status', 'freelance:id,name');
 
         if ($application->mission->client_id !== Auth::id() && !Auth::user()->isAdmin()) {
             return response()->json(['message' => 'Non autorisé.'], 403);
@@ -109,7 +122,47 @@ class ApplicationController extends Controller
             $application->mission->update(['status' => 'en_cours']);
         }
 
+        if (in_array($validated['status'], ['acceptee', 'refusee'], true)) {
+            $content = $validated['status'] === 'acceptee'
+                ? "Bonne nouvelle, votre candidature pour la mission \"{$application->mission->title}\" a été acceptée. Le client va vous contacter pour la suite."
+                : "Votre candidature pour la mission \"{$application->mission->title}\" a été refusée. Merci pour votre intérêt.";
+
+            $this->sendApplicationMessage(Auth::id(), $application->freelance_id, $content);
+        }
+
         return response()->json($application->load(['mission:id,client_id,title,status', 'freelance:id,name']));
+    }
+
+    public function complete(Application $application)
+    {
+        $application->load('mission:id,client_id,title,status', 'freelance:id,name');
+
+        if ($application->freelance_id !== Auth::id()) {
+            return response()->json(['message' => 'Non autorise.'], 403);
+        }
+
+        if ($application->status !== 'acceptee') {
+            return response()->json(['message' => 'Seule une candidature acceptee peut etre terminee.'], 422);
+        }
+
+        if ($application->mission->status === 'fermee') {
+            return response()->json(['message' => 'Cette mission est deja terminee.'], 422);
+        }
+
+        $application->mission->update(['status' => 'fermee']);
+
+        $this->sendApplicationMessage(
+            Auth::id(),
+            $application->mission->client_id,
+            "Projet termine.\n\n"
+            . "Le freelance {$application->freelance->name} a marque la mission \"{$application->mission->title}\" comme terminee. "
+            . "Vous pouvez verifier le travail et le contacter si besoin."
+        );
+
+        return response()->json([
+            'message' => 'Mission terminee. Un message a ete envoye au client.',
+            'application' => $application->load(['mission:id,client_id,title,status', 'freelance:id,name']),
+        ]);
     }
 
     public function destroy(Application $application)
@@ -130,5 +183,36 @@ class ApplicationController extends Controller
 
         return response()->json(['message' => 'Candidature retirée']);
     }
-}
 
+    private function sendApplicationMessage(int $senderId, int $recipientId, string $content): void
+    {
+        if ($senderId === $recipientId) {
+            return;
+        }
+
+        DB::transaction(function () use ($senderId, $recipientId, $content) {
+            $conversation = Conversation::whereHas('participants', function ($query) use ($senderId) {
+                $query->where('user_id', $senderId);
+            })
+                ->whereHas('participants', function ($query) use ($recipientId) {
+                    $query->where('user_id', $recipientId);
+                })
+                ->has('participants', '=', 2)
+                ->first();
+
+            if (!$conversation) {
+                $conversation = Conversation::create();
+                $conversation->participants()->attach([$senderId, $recipientId]);
+            }
+
+            Message::create([
+                'conversation_id' => $conversation->id,
+                'sender_id' => $senderId,
+                'content' => $content,
+                'is_read' => false,
+            ]);
+
+            $conversation->touch();
+        });
+    }
+}

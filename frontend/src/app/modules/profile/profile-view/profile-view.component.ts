@@ -105,3 +105,4 @@ export class ProfileViewComponent implements OnInit {
     this.passwordData = { oldPassword: '', newPassword: '' };
   }
 }
+

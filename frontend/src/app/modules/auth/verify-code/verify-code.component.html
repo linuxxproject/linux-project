@@ -15,7 +15,7 @@
     <div class="auth-field" *ngIf="!resetSuccess">
       <label>Nouveau mot de passe</label>
       <div class="password-input-wrapper">
-        <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" placeholder="••••••••" />
+        <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" placeholder="********" />
         <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" title="Afficher/Masquer">
           <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -32,7 +32,7 @@
     <div class="auth-field" *ngIf="!resetSuccess">
       <label>Confirmer le mot de passe</label>
       <div class="password-input-wrapper">
-        <input [type]="showConfirmPassword ? 'text' : 'password'" [(ngModel)]="confirmPassword" placeholder="••••••••" />
+        <input [type]="showConfirmPassword ? 'text' : 'password'" [(ngModel)]="confirmPassword" placeholder="********" />
         <button type="button" class="password-toggle" (click)="toggleConfirmPasswordVisibility()" title="Afficher/Masquer">
           <svg *ngIf="!showConfirmPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -54,4 +54,5 @@
     <button class="auth-link" routerLink="/auth">Retour a la connexion</button>
   </div>
 </div>
+
 

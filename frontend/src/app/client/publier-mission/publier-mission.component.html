@@ -4,10 +4,10 @@
   <aside class="sidebar">
     <div class="logo"><h3>Mon Espace</h3></div>
     <nav>
-      <a routerLink="/client/dashboard">📊 Tableau de bord</a>
-      <a routerLink="/client/publier-mission" class="active">➕ Publier une mission</a>
-      <a routerLink="/client/mes-missions">📋 Mes missions</a>
-      <a routerLink="/client/candidatures">👥 Candidatures reçues</a>
+      <a routerLink="/client/dashboard">ðŸ“Š Tableau de bord</a>
+      <a routerLink="/client/publier-mission" class="active">âž• Publier une mission</a>
+      <a routerLink="/client/mes-missions">ðŸ“‹ Mes missions</a>
+      <a routerLink="/client/candidatures">ðŸ‘¥ Candidatures reçues</a>
     </nav>
   </aside>
 
@@ -55,7 +55,7 @@
         </div>
 
         <div class="form-group">
-          <label>Budget (€) *</label>
+          <label>Budget (â‚¬) *</label>
           <input type="number" formControlName="budget" placeholder="1000">
           <div class="error-text" *ngIf="budget?.invalid && budget?.touched">
             <span *ngIf="budget?.errors?.['required']">Le budget est requis</span>

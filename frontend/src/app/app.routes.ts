@@ -18,7 +18,7 @@ import { CandidaturesRecuesComponent } from './client/candidatures-recues/candid
 const clientGuard = roleGuard(['client']);
 
 export const routes: Routes = [
-  // Route racine → login directement
+  // Route racine â†’ login directement
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   
   // Auth

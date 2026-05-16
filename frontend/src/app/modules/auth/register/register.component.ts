@@ -49,6 +49,18 @@ export class RegisterComponent {
       },
       error: (err) => {
         this.loading = false;
+        const validationErrors = err.error?.errors;
+
+        if (validationErrors) {
+          this.error = Object.values(validationErrors).flat().join(' ');
+          return;
+        }
+
+        if (err.status === 0) {
+          this.error = 'Impossible de contacter le serveur API. Verifiez que Laravel tourne sur http://127.0.0.1:8000.';
+          return;
+        }
+
         this.error = err.error?.message || 'Erreur lors de l’inscription';
       }
     });

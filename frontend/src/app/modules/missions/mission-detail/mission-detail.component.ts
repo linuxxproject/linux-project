@@ -62,6 +62,10 @@ export class MissionDetailComponent implements OnInit {
     return status;
   }
 
+  candidateCount(): number {
+    return this.mission?.applications_count ?? this.mission?.applications?.length ?? 0;
+  }
+
   formatDate(date: string): string {
     if (!date) return '';
     const d = new Date(date);
@@ -100,3 +104,4 @@ export class MissionDetailComponent implements OnInit {
     this.router.navigate(['/missions']);
   }
 }
+

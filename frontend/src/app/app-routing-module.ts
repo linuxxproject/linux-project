@@ -6,63 +6,71 @@ const routes: Routes = [
   {
     path: '',
     redirectTo: 'auth',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: 'auth',
     loadChildren: () =>
-      import('./modules/auth/auth-module').then(m => m.AuthModule)
+      import('./modules/auth/auth-module').then((m) => m.AuthModule),
   },
   {
     path: 'client',
     canActivate: [AuthGuard],
     loadChildren: () =>
-      import('./modules/client/client-module').then(m => m.ClientModule)
+      import('./modules/client/client-module').then((m) => m.ClientModule),
   },
   {
     path: 'freelance',
     canActivate: [AuthGuard],
     loadChildren: () =>
-      import('./modules/freelance/freelance-module').then(m => m.FreelanceModule)
+      import('./modules/freelance/freelance-module').then(
+        (m) => m.FreelanceModule,
+      ),
   },
   {
     path: 'admin',
     canActivate: [AuthGuard],
     loadChildren: () =>
-      import('./modules/admin/admin-module').then(m => m.AdminModule)
+      import('./modules/admin/admin-module').then((m) => m.AdminModule),
   },
   {
     path: 'missions',
     canActivate: [AuthGuard],
     loadChildren: () =>
-      import('./modules/missions/missions-module').then(m => m.MissionsModule)
+      import('./modules/missions/missions-module').then(
+        (m) => m.MissionsModule,
+      ),
   },
   {
     path: 'candidature',
     canActivate: [AuthGuard],
     loadChildren: () =>
-      import('./modules/candidature/candidature-module').then(m => m.CandidatureModule)
+      import('./modules/candidature/candidature-module').then(
+        (m) => m.CandidatureModule,
+      ),
   },
   {
     path: 'messagerie',
     canActivate: [AuthGuard],
     loadChildren: () =>
-      import('./modules/messagerie/messagerie-module').then(m => m.MessagerieModule)
+      import('./modules/messagerie/messagerie-module').then(
+        (m) => m.MessagerieModule,
+      ),
   },
   {
     path: 'profile',
     canActivate: [AuthGuard],
     loadChildren: () =>
-      import('./modules/profile/profile-module').then(m => m.ProfileModule)
+      import('./modules/profile/profile-module').then((m) => m.ProfileModule),
   },
   {
     path: '**',
-    redirectTo: 'login'
-  }
+    redirectTo: 'auth',
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppRoutingModule {}

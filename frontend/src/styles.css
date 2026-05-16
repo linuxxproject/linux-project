@@ -226,3 +226,57 @@ app-root { display: block; height: 100%; }
 /* ── Mini avatar ── */
 .mav { width: 20px; height: 20px; border-radius: 50%; background: var(--blue-light); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: var(--blue-dark); flex-shrink: 0; }
 
+@media (max-width: 980px) {
+  .stats-4,
+  .grid-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grid-2,
+  .detail-layout,
+  .profile-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .content {
+    min-width: 0;
+  }
+
+  .app-main {
+    padding: 14px;
+    overflow: visible;
+  }
+
+  .stats-4,
+  .stats-3,
+  .grid-3,
+  .grid-2,
+  .form-row-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .tr-4,
+  .tr-3u,
+  .tr-3m {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .tabs {
+    overflow-x: auto;
+  }
+
+  .tab {
+    white-space: nowrap;
+  }
+
+  .auth-card {
+    max-width: 100%;
+  }
+}
