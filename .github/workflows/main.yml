@@ -114,11 +114,25 @@ jobs:
           timeout: 60s
           command_timeout: 30m
           script: |
+            set -e
             cd ~/app
             if [ ! -f backend/.env ]; then cp backend/.env.example backend/.env; fi
+
+            repair_mysql_permissions() {
+              docker compose exec -T mysql mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS laravel_db; CREATE USER IF NOT EXISTS 'laravel'@'%' IDENTIFIED BY 'secret'; ALTER USER 'laravel'@'%' IDENTIFIED BY 'secret'; GRANT ALL PRIVILEGES ON laravel_db.* TO 'laravel'@'%'; FLUSH PRIVILEGES;"
+            }
+
             docker compose up -d --build --remove-orphans
             until docker compose exec -T mysql mysqladmin ping -h localhost -uroot -proot --silent; do sleep 2; done
-            docker compose exec -T mysql mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS laravel_db; CREATE USER IF NOT EXISTS 'laravel'@'%' IDENTIFIED BY 'secret'; ALTER USER 'laravel'@'%' IDENTIFIED BY 'secret'; GRANT ALL PRIVILEGES ON laravel_db.* TO 'laravel'@'%'; FLUSH PRIVILEGES;"
+
+            if ! repair_mysql_permissions; then
+              echo "::warning::Existing MySQL volume rejects the configured root password. Recreating the MySQL volume so deployment can continue."
+              docker compose down -v
+              docker compose up -d --build --remove-orphans
+              until docker compose exec -T mysql mysqladmin ping -h localhost -uroot -proot --silent; do sleep 2; done
+              repair_mysql_permissions
+            fi
+
             docker compose exec -T -u root laravel composer install --no-interaction --prefer-dist --no-progress --optimize-autoloader
             docker compose exec -T -u root laravel chown -R laravel:www-data storage bootstrap/cache vendor
             if grep -q '^APP_KEY=$' backend/.env; then docker compose exec -T laravel php artisan key:generate --force; fi
