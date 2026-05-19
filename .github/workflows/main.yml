@@ -55,15 +55,41 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Check SSH connectivity
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          if [ -z "$DEPLOY_HOST" ]; then
+            echo "::error::DEPLOY_HOST secret is empty or missing."
+            exit 1
+          fi
+
+          for attempt in 1 2 3 4 5 6; do
+            if timeout 10 bash -c "cat < /dev/null > /dev/tcp/${DEPLOY_HOST}/22"; then
+              echo "SSH port 22 is reachable on ${DEPLOY_HOST}."
+              exit 0
+            fi
+
+            echo "Attempt ${attempt}/6: SSH port 22 is not reachable yet."
+            sleep 10
+          done
+
+          echo "::error::Cannot reach ${DEPLOY_HOST}:22 from GitHub Actions. Check the EC2 public IP, instance state, security group inbound rule for port 22, subnet route table, and network ACLs."
+          exit 1
+
       - name: Upload project to server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
+          port: 22
+          timeout: 60s
+          command_timeout: 20m
           target: ~/app
           source: "docker-compose.yml,backend,frontend"
           overwrite: true
+          debug: true
 
       - name: Deploy with Docker Compose
         uses: appleboy/ssh-action@v1.0.3
@@ -71,11 +97,15 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
+          port: 22
+          timeout: 60s
+          command_timeout: 30m
           script: |
             cd ~/app
             if [ ! -f backend/.env ]; then cp backend/.env.example backend/.env; fi
-            docker compose pull
-            docker compose up -d --remove-orphans
+            docker compose up -d --build --remove-orphans
+            until docker compose exec -T mysql mysqladmin ping -h localhost -uroot -proot --silent; do sleep 2; done
+            docker compose exec -T mysql mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS laravel_db; CREATE USER IF NOT EXISTS 'laravel'@'%' IDENTIFIED BY 'secret'; ALTER USER 'laravel'@'%' IDENTIFIED BY 'secret'; GRANT ALL PRIVILEGES ON laravel_db.* TO 'laravel'@'%'; FLUSH PRIVILEGES;"
             docker compose exec -T -u root laravel composer install --no-interaction --prefer-dist --no-progress --optimize-autoloader
             docker compose exec -T -u root laravel chown -R laravel:www-data storage bootstrap/cache vendor
             if grep -q '^APP_KEY=$' backend/.env; then docker compose exec -T laravel php artisan key:generate --force; fi
