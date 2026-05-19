@@ -135,5 +135,8 @@ jobs:
 
             docker compose exec -T -u root laravel composer install --no-interaction --prefer-dist --no-progress --optimize-autoloader
             docker compose exec -T -u root laravel chown -R laravel:www-data storage bootstrap/cache vendor
-            if grep -q '^APP_KEY=$' backend/.env; then docker compose exec -T laravel php artisan key:generate --force; fi
+            if grep -q '^APP_KEY=$' backend/.env; then docker compose exec -T -u root laravel php artisan key:generate --force; fi
+            if ! grep -q '^JWT_SECRET=.\+' backend/.env; then docker compose exec -T -u root laravel php artisan jwt:secret --force; fi
+            docker compose exec -T -u root laravel chown -R laravel:www-data storage bootstrap/cache
+            docker compose exec -T laravel php artisan config:clear
             docker compose exec -T laravel php artisan migrate --force
