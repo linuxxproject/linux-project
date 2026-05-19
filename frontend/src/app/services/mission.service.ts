@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_URL } from '../core/constants/api.constants';
 
 export interface Mission {
   id?: number;
@@ -17,7 +18,7 @@ export interface Mission {
   providedIn: 'root'
 })
 export class MissionService {
-  private apiUrl = 'http://localhost:8000/api/missions';
+  private apiUrl = `${API_URL}/missions`;
 
   constructor(private http: HttpClient) {}
 
