@@ -77,6 +77,19 @@ jobs:
           echo "::error::Cannot reach ${DEPLOY_HOST}:22 from GitHub Actions. Check the EC2 public IP, instance state, security group inbound rule for port 22, subnet route table, and network ACLs."
           exit 1
 
+      - name: Prepare remote app directory
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          port: 22
+          timeout: 60s
+          command_timeout: 5m
+          script: |
+            mkdir -p ~/app
+            sudo chown -R "$(whoami):$(id -gn)" ~/app
+
       - name: Upload project to server
         uses: appleboy/scp-action@v0.1.7
         with:
