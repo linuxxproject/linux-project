@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { API_BASE_URL } from '../../../core/constants/api.constants';
 
 @Component({
   selector: 'app-register',
@@ -57,7 +58,7 @@ export class RegisterComponent {
         }
 
         if (err.status === 0) {
-          this.error = 'Impossible de contacter le serveur API. Verifiez que Laravel tourne sur http://127.0.0.1:8000.';
+          this.error = `Impossible de contacter le serveur API. Verifiez que Laravel tourne sur ${API_BASE_URL}.`;
           return;
         }
 
